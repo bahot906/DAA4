@@ -1,1 +1,1 @@
-marker GACGATGAC
+marker GGCGCCGGCG
