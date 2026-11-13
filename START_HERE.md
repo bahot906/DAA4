@@ -126,8 +126,3 @@ Logging in. GitHub does not accept your password in the terminal. The easiest wa
 ## 10. Submit
 
 Fill in `README.md`: it is your report, with the section "AI use" (the syllabus requires you to say which AI tools you used and for what; write "none" if you used none). Check that the four files in `data` and the screenshot of `outbreak.html` are in the repository. Open the link in a private browser window to see that it works without your login. The deadline is set in Moodle: upload the link there before it. After the deadline a quiz follows: it asks about the algorithms of the missions (small calculations by hand and theory), so you must understand every line you submit.
-
-
-## Personal data for this copy
-
-This starter folder has individual input files generated for student ID **253091** using the provided command `java tools/MakeVariant.java 253091 data`. Do not replace these files with another student’s data. Complete the TODO methods yourself, run the checks, and write your own explanations in README.md.

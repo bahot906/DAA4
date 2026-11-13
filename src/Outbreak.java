@@ -1,33 +1,45 @@
 import java.util.*;
-
-/**
- * Mission 5. Dynamic programming on the tree of infections. Root the tree in person 0.
- * Input.Tree.neighbours() gives the neighbours of every person. The number of people is at most about 100, so a recursive DFS is fine here.
- */
 public class Outbreak {
-
-    /**
-     * Choose people to test so that for every link (somebody infected somebody) at least one of the two is tested,
-     * and the total cost of testing is as small as possible. cost[v] is the price of testing person v.
-     * Returns tested[v] = true if person v is tested.
-     *
-     * State for every person v (looking only at v and everything below it): the smallest cost when v IS tested, and
-     * the smallest cost when v is NOT tested. What must then be true about the children of v in each case?
-     * Do not forget to rebuild the answer (who exactly is tested), not only the cost: the picture needs it.
-     * Main calls this twice: with all costs equal to 1 (the line "Tests needed") and with the real costs ("Cheapest testing").
-     */
-    public static boolean[] cheapestTests(int n, int[][] nb, int[] cost) {
-        // TODO Mission 5a
-        return new boolean[n];
+    public static boolean[] cheapestTests(int n,int[][] nb,int[] cost) {
+        long[][] dp=new long[n][2]; int[] parent=new int[n]; Arrays.fill(parent,-1);
+        ArrayList<Integer> order=new ArrayList<>(); ArrayDeque<Integer> st=new ArrayDeque<>();
+        st.push(0); parent[0]=0;
+        while(!st.isEmpty()) { int v=st.pop(); order.add(v);
+            for(int u:nb[v]) if(u!=parent[v]) { parent[u]=v; st.push(u); }
+        }
+        for(int z=order.size()-1;z>=0;z--) {
+            int v=order.get(z); dp[v][1]=cost[v]; dp[v][0]=0;
+            for(int u:nb[v]) if(parent[u]==v) {
+                dp[v][1]+=Math.min(dp[u][0],dp[u][1]);
+                dp[v][0]+=dp[u][1];
+            }
+        }
+        boolean[] answer=new boolean[n]; ArrayDeque<int[]> todo=new ArrayDeque<>();
+        todo.push(new int[]{0,dp[0][1]<=dp[0][0]?1:0});
+        while(!todo.isEmpty()) {
+            int[] x=todo.pop(); int v=x[0],state=x[1]; answer[v]=state==1;
+            for(int u:nb[v]) if(parent[u]==v) {
+                int child=state==0?1:(dp[u][1]<=dp[u][0]?1:0);
+                todo.push(new int[]{u,child});
+            }
+        }
+        return answer;
     }
-
-    /**
-     * The number of links on the longest chain of infections, that is the longest path in the tree (counted in links).
-     * A path goes up from one person and down to another; for every person you need the two longest ways down.
-     * Example: a line 0-1-2-3 has chain 3; a star with centre 0 and leaves 1, 2, 3 has chain 2.
-     */
-    public static int longestChain(int n, int[][] nb) {
-        // TODO Mission 5b
-        return -1;
+    public static int longestChain(int n,int[][] nb) {
+        int[] parent=new int[n],order=new int[n]; Arrays.fill(parent,-1);
+        int size=1; order[0]=0; parent[0]=0;
+        for(int i=0;i<size;i++) for(int u:nb[order[i]]) if(u!=parent[order[i]]) {
+            parent[u]=order[i]; order[size++]=u;
+        }
+        int[] down=new int[n]; int best=0;
+        for(int i=size-1;i>=0;i--) {
+            int v=order[i],one=0,two=0;
+            for(int u:nb[v]) if(parent[u]==v) {
+                int len=down[u]+1;
+                if(len>one) {two=one;one=len;} else if(len>two) two=len;
+            }
+            down[v]=one; best=Math.max(best,one+two);
+        }
+        return best;
     }
 }
